@@ -153,18 +153,16 @@ The async thread pool is configured with:
 All blocking endpoints are synchronous and return results directly.
 
 | Method | Endpoint | Description | Response Type |
-|--------|----------|-------------|---------------|
-| GET | `/blocking/customers/{name}` | Get customers by name | `List<Customer>` |
-| POST | `/blocking/customers/save` | Save a new customer | `Customer` |
-| GET | `/blocking/fileread` | Read file content | `String` |
-| POST | `/blocking/filewrite` | Write data to file | `Boolean` |
+| GET    | `/blocking/customers/{name}` | Get customers by name | `List<Customer>` |
+| POST   | `/blocking/customers/save` | Save a new customer | `Customer` |
+| GET    | `/blocking/fileread` | Read file content | `String` |
+| POST   | `/blocking/filewrite` | Write data to file | `Boolean` |
 
 ### Non-Blocking Endpoints (`/nonblocking`)
 
 All non-blocking endpoints are asynchronous and return `CompletableFuture`.
 
 | Method | Endpoint | Description | Response Type |
-|--------|----------|-------------|---------------|
 | GET | `/nonblocking/customers/{name}` | Get customers by name | `CompletableFuture<List<Customer>>` |
 | POST | `/nonblocking/customers/save` | Save a new customer | `CompletableFuture<Customer>` |
 | GET | `/nonblocking/fileread` | Read file content | `CompletableFuture<String>` |
@@ -197,7 +195,7 @@ docker run -d -p 27017:27017 --name mongodb mongo:latest
 mvn clean install
 ```
 
-## ▶️ Running the Application
+##  Running the Application
 
 ### Using Maven
 
@@ -311,9 +309,9 @@ Our performance testing revealed significant improvements when using non-blockin
 
 | Operation Type | Blocking | Non-Blocking | Improvement |
 |----------------|----------|--------------|-------------|
-| CRUD Workflows | Baseline | 95.6% faster | **95.6%** |
-| File Read/Write | Baseline | 85% faster | **85%** |
-| Read Operations | Baseline | Noticeably faster | Significant |
+| CRUD Workflows | Baseline | 95.6% faster | **95.6%**   |
+| File Read/Write| Baseline | 85% faster   | **85%**     |
+| Read Operations| Baseline | Noticeably faster | Significant |
 
 The non-blocking approach provides:
 - Better scalability - handles more concurrent requests
@@ -321,31 +319,17 @@ The non-blocking approach provides:
 - Reduced latency - main thread stays available for new requests
 - Higher throughput - processes more requests per unit time
 
-## 🔮 Future Improvements
-
-- [ ] Add `@Document` annotation to `Customer` entity for proper MongoDB mapping
-- [ ] Fix file path configuration for cross-platform compatibility
-- [ ] Add comprehensive unit tests
-- [ ] Add integration tests
-- [ ] Add API documentation using Swagger/OpenAPI
-- [ ] Implement request/response logging
-- [ ] Add metrics collection (Micrometer/Prometheus)
-- [ ] Add health check endpoints
-- [ ] Implement error handling and exception management
-- [ ] Add Docker support for easy deployment
-
-## 👤 Author
+## Author
 
 **Jayesh Devre**
 
 - GitHub: [@JayeshDevre](https://github.com/JayeshDevre)
 - LinkedIn: [jayesh-devre](https://www.linkedin.com/in/jayesh-devre/)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 This project demonstrates the practical benefits of asynchronous programming in Spring Boot microservices, showcasing real-world performance improvements through non-blocking operations.
 
 ---
 
-⭐ **Star this repository if you find it helpful!**
 
