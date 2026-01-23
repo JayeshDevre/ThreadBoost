@@ -1,10 +1,5 @@
 # ThreadBoost - Blocking vs Non-Blocking Async Microservice
 
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.0-brightgreen)
-![Java](https://img.shields.io/badge/Java-8-orange)
-![MongoDB](https://img.shields.io/badge/MongoDB-4.4-green)
-![Maven](https://img.shields.io/badge/Maven-3.6+-blue)
-
 ## 🚀 Project Overview
 
 ThreadBoost is a Spring Boot microservice that demonstrates the **response time improvement** when comparing traditional blocking Spring Boot applications to non-blocking Spring Boot applications. This project showcases real-world performance gains achieved through asynchronous processing.
