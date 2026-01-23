@@ -91,7 +91,7 @@ sequenceDiagram
     AsyncService-->>Client: Complete CompletableFuture
 ```
 
-## ✨ Features
+##  Features
 
 - **Two Controller Implementations**
   - `BlockingController` - Traditional synchronous endpoints
@@ -148,16 +148,18 @@ The async thread pool is configured with:
 All blocking endpoints are synchronous and return results directly.
 
 | Method | Endpoint | Description | Response Type |
-| GET    | `/blocking/customers/{name}` | Get customers by name | `List<Customer>` |
-| POST   | `/blocking/customers/save` | Save a new customer | `Customer` |
-| GET    | `/blocking/fileread` | Read file content | `String` |
-| POST   | `/blocking/filewrite` | Write data to file | `Boolean` |
+|--------|----------|-------------|---------------|
+| GET | `/blocking/customers/{name}` | Get customers by name | `List<Customer>` |
+| POST | `/blocking/customers/save` | Save a new customer | `Customer` |
+| GET | `/blocking/fileread` | Read file content | `String` |
+| POST | `/blocking/filewrite` | Write data to file | `Boolean` |
 
 ### Non-Blocking Endpoints (`/nonblocking`)
 
 All non-blocking endpoints are asynchronous and return `CompletableFuture`.
 
 | Method | Endpoint | Description | Response Type |
+|--------|----------|-------------|---------------|
 | GET | `/nonblocking/customers/{name}` | Get customers by name | `CompletableFuture<List<Customer>>` |
 | POST | `/nonblocking/customers/save` | Save a new customer | `CompletableFuture<Customer>` |
 | GET | `/nonblocking/fileread` | Read file content | `CompletableFuture<String>` |
@@ -190,7 +192,7 @@ docker run -d -p 27017:27017 --name mongodb mongo:latest
 mvn clean install
 ```
 
-##  Running the Application
+## Running the Application
 
 ### Using Maven
 
