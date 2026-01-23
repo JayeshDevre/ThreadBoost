@@ -310,6 +310,52 @@ Our performance testing revealed significant improvements when using non-blockin
 | File Read/Write| Baseline | 85% faster   | **85%**     |
 | Read Operations| Baseline | Noticeably faster | Significant |
 
+### API Response Time Screenshots
+
+#### Customer Operations
+
+**GET Customer by Name**
+
+Blocking: 1237 ms | Non-Blocking: 146 ms (88.2% faster)
+
+![Blocking GET Customer](images/Blocking%20GET%20customer.png)
+*Blocking GET Customer - Response Time: 1237 ms*
+
+![Non-Blocking GET Customer](images/NonBlocking%20GET%20customer.png)
+*Non-Blocking GET Customer - Response Time: 146 ms*
+
+**POST Add Customer**
+
+Blocking: 745 ms | Non-Blocking: 19 ms (97.4% faster)
+
+![Blocking POST Add Customer](images/Blocking%20POST%20Add%20Customer.png)
+*Blocking POST Add Customer - Response Time: 745 ms*
+
+![Non-Blocking POST Add Customer](images/NonBlocking%20POST%20Add%20Customer.png)
+*Non-Blocking POST Add Customer - Response Time: 19 ms*
+
+#### File Operations
+
+**GET File Read**
+
+Blocking: 538 ms | Non-Blocking: 23 ms (95.7% faster)
+
+![Blocking GET FileRead](images/Blocking%20GET%20FileRead.png)
+*Blocking GET FileRead - Response Time: 538 ms*
+
+![Non-Blocking GET FileRead](images/NonBlocking%20GET%20FileRead.png)
+*Non-Blocking GET FileRead - Response Time: 23 ms*
+
+**POST File Write**
+
+Blocking: 531 ms | Non-Blocking: 49 ms (90.8% faster)
+
+![Blocking POST FileWrite](images/Blocking%20Post%20FileWrite.png)
+*Blocking POST FileWrite - Response Time: 531 ms*
+
+![Non-Blocking POST FileWrite](images/NonBlocking%20Post%20FileWrite.png)
+*Non-Blocking POST FileWrite - Response Time: 49 ms*
+
 The non-blocking approach provides:
 - Better scalability - handles more concurrent requests
 - Improved resource utilization - threads aren't blocked waiting for I/O
