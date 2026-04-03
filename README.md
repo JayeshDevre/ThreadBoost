@@ -7,6 +7,19 @@ A zero-configuration Spring Boot application that **visually demonstrates** why 
 
 ---
 
+## Screenshots
+
+### I/O Bound — Scatter-Gather Race
+![I/O Race](docs/io-race.png)
+
+### CPU Bound — Parallel Stream Processing
+![CPU Race](docs/cpu-race.png)
+
+### Thread Starvation — 200 Concurrent Request Grid
+![Thread Starvation](docs/thread-starvation.png)
+
+---
+
 ## What It Does
 
 ThreadBoost runs three live experiments, each targeting a different concurrency bottleneck:
