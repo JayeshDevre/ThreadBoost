@@ -33,6 +33,84 @@ Each experiment has a side-by-side explanation panel with the Java API used and 
 
 ---
 
+## Architecture
+
+### System Overview
+
+```mermaid
+graph LR
+    Browser["Browser UI"]
+
+    subgraph SpringBoot["Spring Boot 3.2 / Tomcat"]
+        BC["BlockingController"]
+        NBC["NonBlockingController"]
+        LTC["LoadTestingController"]
+        AS["AsyncService"]
+        CPU["CpuIntensiveService"]
+        EMS["ExternalMockService"]
+        TP["ThreadPoolTaskExecutor"]
+    end
+
+    EMB["Embedded MongoDB"]
+
+    Browser --> BC
+    Browser --> NBC
+    Browser --> LTC
+    NBC --> AS
+    AS --> TP
+    TP --> EMS
+    TP --> CPU
+    BC --> EMS
+    BC --> CPU
+    LTC --> BC
+    LTC --> NBC
+    AS --> EMB
+    BC --> EMB
+```
+
+### Blocking vs Async Request Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Tomcat Thread
+    participant API 1
+    participant API 2
+    participant API 3
+
+    Note over Client, API 3: BLOCKING — Thread held for entire duration
+    Client->>Tomcat Thread: GET /blocking/dashboard
+    Tomcat Thread->>API 1: Call (2s)
+    API 1-->>Tomcat Thread: Response
+    Tomcat Thread->>API 2: Call (2s)
+    API 2-->>Tomcat Thread: Response
+    Tomcat Thread->>API 3: Call (2s)
+    API 3-->>Tomcat Thread: Response
+    Tomcat Thread-->>Client: 6 seconds total
+```
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Tomcat Thread
+    participant Worker 1
+    participant Worker 2
+    participant Worker 3
+
+    Note over Client, Worker 3: ASYNC — Thread freed immediately
+    Client->>Tomcat Thread: GET /nonblocking/dashboard
+    Tomcat Thread->>Worker 1: CompletableFuture (API 1)
+    Tomcat Thread->>Worker 2: CompletableFuture (API 2)
+    Tomcat Thread->>Worker 3: CompletableFuture (API 3)
+    Note over Tomcat Thread: Thread returns to pool
+    Worker 1-->>Client: Done (2s)
+    Worker 2-->>Client: Done (2s)
+    Worker 3-->>Client: Done (2s)
+    Note over Client: allOf() merges — 2 seconds total
+```
+
+---
+
 ## Quick Start
 
 **Prerequisites:** Java 17+, Maven 3.6+
