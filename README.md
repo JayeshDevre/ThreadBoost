@@ -1,378 +1,114 @@
-# ThreadBoost - Blocking vs Non-Blocking Async Microservice
+# ThreadBoost
 
-## 🚀 Project Overview
+A zero-configuration Spring Boot application that **visually demonstrates** why multithreading matters — through interactive, real-time benchmarks you can run in your browser.
 
-ThreadBoost is a Spring Boot microservice that demonstrates the **response time improvement** when comparing traditional blocking Spring Boot applications to non-blocking Spring Boot applications. This project showcases real-world performance gains achieved through asynchronous processing.
+> Clone → `mvn spring-boot:run` → Open `http://localhost:8080` → Done.  
+> No MongoDB install. No config files. No environment variables.
 
-### 📊 Key Performance Improvements
+---
 
-- **CRUD workflows improved by 95.6%**
-- **File read/write processing efficiency increased by 85%**
-- **Read operations became noticeably faster**
+## What It Does
 
-## 🎯 What This Project Demonstrates
+ThreadBoost runs three live experiments, each targeting a different concurrency bottleneck:
 
-- Response time improvement comparison between blocking and non-blocking approaches
-- Real-world performance gains achieved through async processing
-- Practical implementation of async features in Spring Boot using `CompletableFuture` and `@Async`
-- Custom thread pool configuration for optimal resource utilization
+| Tab | Concept | Blocking Approach | Multithreaded Approach |
+|-----|---------|-------------------|------------------------|
+| **I/O Race** | Scatter-Gather | Sequential API calls (6s) | `CompletableFuture.allOf()` (2s) |
+| **CPU Race** | Parallelism | Single-core `for` loop | `parallelStream()` across all cores |
+| **Thread Starvation** | Resource Exhaustion | Tomcat threads freeze (mass timeouts) | Async delegation (100% success) |
 
-## 🔄 Blocking vs Non-Blocking Explained
+Each experiment has a side-by-side explanation panel with the Java API used and a real-world production scenario.
 
-### Blocking (Synchronous) Microservices
+---
 
-**How it works:**
-- Blocking APIs stop the execution thread until a result is received from the backend layer
-- A single thread serves the entire request from controller → business layer → repository layer
-- This same thread is blocked until the response is returned
+## Tech Stack
 
-**Limitation:** Thread remains idle waiting for I/O operations, leading to poor resource utilization and reduced throughput.
+| Layer | Technology |
+|-------|-----------|
+| Framework | Spring Boot 3.2.0 |
+| Language | Java 17 |
+| Database | Embedded MongoDB (Flapdoodle) — runs in RAM, zero setup |
+| Build | Maven |
+| Frontend | Vanilla HTML/CSS/JS — no npm, no bundler |
 
-### Non-Blocking (Asynchronous) Microservices
+---
 
-**How it works:**
-- Non-blocking APIs don't wait for the backend response
-- They continue handling new incoming user requests
-- Multiple worker threads perform backend tasks
-- The main thread passes the request to a worker thread from a pool and continues serving new requests
-- The worker thread processes the request and sends the response back to the user
+## Quick Start
 
-**Benefit:** Better resource utilization and improved throughput, allowing the application to handle more concurrent requests.
-
-> **Note:** We can create non-blocking APIs in Spring Boot using async features and `CompletableFuture`.
-
-## 🏗️ Architecture
-
-### Blocking Flow
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Controller
-    participant Service
-    participant Repository
-    participant MongoDB
-
-    Client->>Controller: HTTP Request
-    Controller->>Service: Synchronous Call
-    Service->>Repository: Synchronous Call
-    Repository->>MongoDB: Query
-    MongoDB-->>Repository: Response
-    Repository-->>Service: Result
-    Service-->>Controller: Result
-    Controller-->>Client: HTTP Response
-    Note over Controller,MongoDB: Thread Blocked During Entire Flow
-```
-
-### Non-Blocking Flow
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Controller
-    participant AsyncService
-    participant ThreadPool
-    participant Service
-    participant Repository
-    participant MongoDB
-
-    Client->>Controller: HTTP Request
-    Controller->>AsyncService: Async Call (CompletableFuture)
-    AsyncService->>ThreadPool: Submit Task
-    Controller-->>Client: Return CompletableFuture
-    Note over Controller: Thread Free to Handle New Requests
-    
-    ThreadPool->>Service: Execute Task
-    Service->>Repository: Synchronous Call
-    Repository->>MongoDB: Query
-    MongoDB-->>Repository: Response
-    Repository-->>Service: Result
-    Service-->>AsyncService: Result
-    AsyncService-->>Client: Complete CompletableFuture
-```
-
-##  Features
-
-- **Two Controller Implementations**
-  - `BlockingController` - Traditional synchronous endpoints
-  - `NonBlockingController` - Asynchronous endpoints using `CompletableFuture`
-
-- **Customer Management Operations**
-  - CRUD operations with MongoDB
-  - Find customers by name
-  - Save new customers
-
-- **File I/O Operations**
-  - Read file content
-  - Write data to file
-
-- **Custom Thread Pool Configuration**
-  - Configurable core and max pool sizes
-  - Optimized for high-concurrency scenarios
-
-- **Performance Comparison Capabilities**
-  - Side-by-side comparison of blocking vs non-blocking approaches
-  - Real-world performance metrics
-
-## 🛠️ Technology Stack
-
-- **Framework:** Spring Boot 2.7.0
-- **Language:** Java 8
-- **Database:** MongoDB (for Customer data persistence)
-- **Build Tool:** Maven
-- **Libraries:**
-  - Lombok (for reducing boilerplate code)
-  - Apache Commons Lang3
-
-## 📋 Prerequisites
-
-Before running this project, ensure you have the following installed:
-
-- **Java 8** or higher
-- **Maven 3.6+**
-- **MongoDB** (running on `localhost:27017`)
-- **IDE** (IntelliJ IDEA, Eclipse, or VS Code) - Optional but recommended
-
-## ⚙️ Configuration
-
-The application runs on port **8080** and connects to MongoDB on `localhost:27017`. 
-
-The async thread pool is configured with:
-- Core Pool Size: 1000
-- Max Pool Size: 1000
-
-## 🔌 API Endpoints
-
-### Blocking Endpoints (`/blocking`)
-
-All blocking endpoints are synchronous and return results directly.
-
-| Method | Endpoint | Description | Response Type |
-|--------|----------|-------------|---------------|
-| GET | `/blocking/customers/{name}` | Get customers by name | `List<Customer>` |
-| POST | `/blocking/customers/save` | Save a new customer | `Customer` |
-| GET | `/blocking/fileread` | Read file content | `String` |
-| POST | `/blocking/filewrite` | Write data to file | `Boolean` |
-
-### Non-Blocking Endpoints (`/nonblocking`)
-
-All non-blocking endpoints are asynchronous and return `CompletableFuture`.
-
-| Method | Endpoint | Description | Response Type |
-|--------|----------|-------------|---------------|
-| GET | `/nonblocking/customers/{name}` | Get customers by name | `CompletableFuture<List<Customer>>` |
-| POST | `/nonblocking/customers/save` | Save a new customer | `CompletableFuture<Customer>` |
-| GET | `/nonblocking/fileread` | Read file content | `CompletableFuture<String>` |
-| POST | `/nonblocking/filewrite` | Write data to file | `CompletableFuture<Boolean>` |
-
-## 🚀 Setup Instructions
-
-### 1. Clone the Repository
+**Prerequisites:** Java 17+, Maven 3.6+
 
 ```bash
 git clone https://github.com/JayeshDevre/ThreadBoost.git
 cd ThreadBoost
-```
-
-### 2. Configure MongoDB
-
-Ensure MongoDB is running on your local machine:
-
-```bash
-# Start MongoDB (macOS with Homebrew)
-brew services start mongodb-community
-
-# Or using Docker
-docker run -d -p 27017:27017 --name mongodb mongo:latest
-```
-
-### 3. Build the Project
-
-```bash
-mvn clean install
-```
-
-## Running the Application
-
-### Using Maven
-
-```bash
 mvn spring-boot:run
 ```
 
-### Using IDE
-
-1. Open the project in your IDE (IntelliJ IDEA, Eclipse, or VS Code)
-2. Navigate to `src/main/java/com/cod/asyncmicroservice/AsyncmicroserviceApplication.java`
-3. Run the `main` method
-
-### Access the Application
-
-Once started, the application will be available at:
-- **Base URL:** `http://localhost:8080`
-
-## 📝 Example API Calls
-
-### Blocking Endpoints
-
-#### Get Customer by Name
-```bash
-curl -X GET http://localhost:8080/blocking/customers/John
-```
-
-#### Save Customer
-```bash
-curl -X POST http://localhost:8080/blocking/customers/save \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "role": "Developer",
-    "age": 30
-  }'
-```
-
-#### Read File
-```bash
-curl -X GET http://localhost:8080/blocking/fileread
-```
-
-#### Write File
-```bash
-curl -X POST http://localhost:8080/blocking/filewrite \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": "Hello, World!"
-  }'
-```
-
-### Non-Blocking Endpoints
-
-#### Get Customer by Name (Async)
-```bash
-curl -X GET http://localhost:8080/nonblocking/customers/John
-```
-
-#### Save Customer (Async)
-```bash
-curl -X POST http://localhost:8080/nonblocking/customers/save \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Jane Doe",
-    "role": "Designer",
-    "age": 28
-  }'
-```
-
-#### Read File (Async)
-```bash
-curl -X GET http://localhost:8080/nonblocking/fileread
-```
-
-#### Write File (Async)
-```bash
-curl -X POST http://localhost:8080/nonblocking/filewrite \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": "Async file write example"
-  }'
-```
-
-### Sample Request/Response
-
-**Request:**
-```json
-{
-  "name": "John Doe",
-  "role": "Developer",
-  "age": 30
-}
-```
-
-**Response:**
-```json
-{
-  "id": "507f1f77bcf86cd799439011",
-  "name": "John Doe",
-  "role": "Developer",
-  "age": 30
-}
-```
-
-## 📊 Performance Comparison
-
-### Test Results
-
-Our performance testing revealed significant improvements when using non-blocking approaches:
-
-| Operation Type | Blocking | Non-Blocking | Improvement |
-|----------------|----------|--------------|-------------|
-| CRUD Workflows | Baseline | 95.6% faster | **95.6%**   |
-| File Read/Write| Baseline | 85% faster   | **85%**     |
-| Read Operations| Baseline | Noticeably faster | Significant |
-
-### API Response Time Screenshots
-
-#### Customer Operations
-
-**GET Customer by Name**
-
-Blocking: 1237 ms | Non-Blocking: 146 ms (88.2% faster)
-
-![Blocking GET Customer](images/Blocking%20GET%20customer.png)
-*Blocking GET Customer - Response Time: 1237 ms*
-
-![Non-Blocking GET Customer](images/NonBlocking%20GET%20customer.png)
-*Non-Blocking GET Customer - Response Time: 146 ms*
-
-**POST Add Customer**
-
-Blocking: 745 ms | Non-Blocking: 19 ms (97.4% faster)
-
-![Blocking POST Add Customer](images/Blocking%20POST%20Add%20Customer.png)
-*Blocking POST Add Customer - Response Time: 745 ms*
-
-![Non-Blocking POST Add Customer](images/NonBlocking%20POST%20Add%20Customer.png)
-*Non-Blocking POST Add Customer - Response Time: 19 ms*
-
-#### File Operations
-
-**GET File Read**
-
-Blocking: 538 ms | Non-Blocking: 23 ms (95.7% faster)
-
-![Blocking GET FileRead](images/Blocking%20GET%20FileRead.png)
-*Blocking GET FileRead - Response Time: 538 ms*
-
-![Non-Blocking GET FileRead](images/NonBlocking%20GET%20FileRead.png)
-*Non-Blocking GET FileRead - Response Time: 23 ms*
-
-**POST File Write**
-
-Blocking: 531 ms | Non-Blocking: 49 ms (90.8% faster)
-
-![Blocking POST FileWrite](images/Blocking%20Post%20FileWrite.png)
-*Blocking POST FileWrite - Response Time: 531 ms*
-
-![Non-Blocking POST FileWrite](images/NonBlocking%20Post%20FileWrite.png)
-*Non-Blocking POST FileWrite - Response Time: 49 ms*
-
-The non-blocking approach provides:
-- Better scalability - handles more concurrent requests
-- Improved resource utilization - threads aren't blocked waiting for I/O
-- Reduced latency - main thread stays available for new requests
-- Higher throughput - processes more requests per unit time
-
-## Author
-
-**Jayesh Devre**
-
-- GitHub: [@JayeshDevre](https://github.com/JayeshDevre)
-- LinkedIn: [jayesh-devre](https://www.linkedin.com/in/jayesh-devre/)
-
-## Acknowledgments
-
-This project demonstrates the practical benefits of asynchronous programming in Spring Boot microservices, showcasing real-world performance improvements through non-blocking operations.
+Open **http://localhost:8080** and start clicking.
 
 ---
 
+## Project Structure
 
+```
+src/main/java/com/cod/asyncmicroservice/
+├── config/
+│   └── AsyncThreadPoolConfig.java       # Custom ThreadPoolTaskExecutor
+├── business/
+│   ├── AsyncService.java                # @Async wrappers returning CompletableFuture
+│   ├── CpuIntensiveService.java         # SHA-256 hashing (sequential vs parallel)
+│   ├── ExternalMockService.java         # Simulated 2-second external API calls
+│   ├── CustomerService.java             # MongoDB CRUD
+│   └── FileService.java                 # File I/O operations
+├── controller/
+│   ├── BlockingController.java          # Synchronous endpoints
+│   ├── NonBlockingController.java       # Async endpoints
+│   └── LoadTestingController.java       # 200-request thread starvation test
+└── domain/
+    ├── Customer.java
+    ├── FileData.java
+    └── DashboardResponse.java
+```
+
+---
+
+## API Reference
+
+### Core Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/blocking/dashboard` | Blocking scatter-gather (3 APIs sequentially) |
+| GET | `/nonblocking/dashboard` | Async scatter-gather (`CompletableFuture.allOf`) |
+| GET | `/blocking/cpu-heavy` | SHA-256 hashing on single core |
+| GET | `/nonblocking/cpu-heavy` | SHA-256 hashing via `parallelStream()` |
+| GET | `/loadtest/blocking` | Fire 200 concurrent requests at blocking endpoint |
+| GET | `/loadtest/nonblocking` | Fire 200 concurrent requests at async endpoint |
+
+### CRUD Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/blocking/customers/{name}` | Get customers by name (sync) |
+| POST | `/blocking/customers/save` | Save customer (sync) |
+| GET | `/nonblocking/customers/{name}` | Get customers by name (async) |
+| POST | `/nonblocking/customers/save` | Save customer (async) |
+
+---
+
+## Key Concepts Demonstrated
+
+### 1. Scatter-Gather Pattern
+Three independent I/O calls run on separate threads via `@Async` and merge with `CompletableFuture.allOf()`. Cuts latency from the sum of all calls to the duration of the slowest one.
+
+### 2. CPU Parallelism
+`parallelStream()` distributes SHA-256 computation across all available cores using the `ForkJoinPool`. A single-core loop leaves most of the CPU idle.
+
+### 3. Thread Starvation
+Tomcat's default thread pool (200 threads) is finite. Blocking endpoints hold threads hostage during slow I/O, causing new requests to queue and timeout. Returning `CompletableFuture` from controllers frees the HTTP thread immediately, preventing exhaustion.
+
+---
+
+## Author
+
+**Jayesh Devre**  
+[GitHub](https://github.com/JayeshDevre) · [LinkedIn](https://www.linkedin.com/in/jayesh-devre/)
