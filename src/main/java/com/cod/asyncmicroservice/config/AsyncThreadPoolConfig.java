@@ -1,6 +1,7 @@
 package com.cod.asyncmicroservice.config;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,8 @@ import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAsync
-@Slf4j
 public class AsyncThreadPoolConfig {
+    private static final Logger log = LoggerFactory.getLogger(AsyncThreadPoolConfig.class);
 
     @Value("${com.cod.async.microservice.corepoolsize:1000}")
     private int corePoolSize;

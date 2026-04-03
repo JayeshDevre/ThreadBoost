@@ -2,7 +2,8 @@ package com.cod.asyncmicroservice.business;
 
 
 import com.cod.asyncmicroservice.domain.FileData;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class FileService {
+    private static final Logger log = LoggerFactory.getLogger(FileService.class);
 
     @Value("${cod.demo.file}")
     String fileName;

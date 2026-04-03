@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreadBoost UI - Async Performance</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main class="container">
+        <header>
+            <h1>ThreadBoost</h1>
+            <p>Visualizing Spring Boot Multithreading Strategies</p>
+
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="io-test">I/O Bound (Scatter-Gather)</button>
+                <button class="tab-btn" data-tab="cpu-test">CPU Bound (Parallelism)</button>
+                <button class="tab-btn" data-tab="load-test">Thread Starvation (Grid)</button>
+            </nav>
+        </header>
+
+        <!-- I/O Bound Tab -->
+        <section id="io-test" class="tab-content active">
+            <div class="panel">
+                <div class="header-split">
+                    <h2>Scatter-Gather Race</h2>
+                    <button id="startIoRaceBtn" class="primary-btn">Start Race</button>
+                </div>
+                <p class="subtitle">Fetching 3 external APIs (simulating a 2-second network delay for each).</p>
+
+                <div class="competitor">
+                    <div class="racer-info">
+                        <h3>🚧 Blocking (Synchronous)</h3>
+                        <span class="timer" id="io-blocking-timer">0.00s</span>
+                    </div>
+                    <div class="track">
+                        <div class="progress-bar blocking-color" id="io-blocking-progress"></div>
+                    </div>
+                </div>
+
+                <div class="competitor">
+                    <div class="racer-info">
+                        <h3>⚡ Async (Non-Blocking)</h3>
+                        <span class="timer" id="io-async-timer">0.00s</span>
+                    </div>
+                    <div class="track">
+                        <div class="progress-bar async-color" id="io-async-progress"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-sidebar">
+                <div class="info-card">
+                    <h4>How it works</h4>
+
+                    <p class="section-label">THE SCENARIO</p>
+                    <p>Fetching data from 3 separate external APIs (2 seconds each).</p>
+
+                    <p class="section-label text-red">BLOCKING (SYNCHRONOUS)</p>
+                    <p>Fetches sequentially. Total = <strong>6 seconds.</strong></p>
+
+                    <p class="section-label text-green">ASYNC (MULTITHREADED)</p>
+                    <p>Fetches all 3 simultaneously. Total = <strong>2 seconds.</strong></p>
+
+                    <p class="section-label text-blue">UNDER THE HOOD (JAVA)</p>
+                    <p>Using Spring Boot's <code>@Async</code>, each API call is handed to a custom
+                        <code>ThreadPoolTaskExecutor</code> background thread. We then use
+                        <code>CompletableFuture.allOf()</code> to perfectly synchronize them and trigger the final
+                        merged response exactly when the slowest thread finishes.</p>
+
+                    <div class="divider"></div>
+
+                    <p class="section-label">PRODUCTION EXAMPLE</p>
+                    <p class="real-world">Building an UberEats App Homepage. Before the app can load, the server must
+                        fetch "Recent Orders" (DB 1), "Recommendations" (AI Microservice), and "Active Promos" (Redis).
+                        If done sequentially, the user stares at a blank screen for 6 seconds and closes the app.
+                        Multithreading loads everything in 2 seconds, skyrocketing user retention!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CPU Bound Tab -->
+        <section id="cpu-test" class="tab-content">
+            <div class="panel">
+                <div class="header-split">
+                    <h2>CPU Processing Race</h2>
+                    <button id="startCpuRaceBtn" class="primary-btn">Calculate SHA-256</button>
+                </div>
+                <p class="subtitle">Calculating millions of hashes. Proving multithreading utilizes all CPU CPU Cores.
+                </p>
+
+                <div class="competitor">
+                    <div class="racer-info">
+                        <h3>🚧 Single Core Loop</h3>
+                        <span class="timer" id="cpu-blocking-timer">0.00s</span>
+                    </div>
+                    <div class="track">
+                        <div class="progress-bar blocking-color" id="cpu-blocking-progress"></div>
+                    </div>
+                </div>
+
+                <div class="competitor">
+                    <div class="racer-info">
+                        <h3>⚡ Parallel Streams</h3>
+                        <span class="timer" id="cpu-async-timer">0.00s</span>
+                    </div>
+                    <div class="track">
+                        <div class="progress-bar async-color" id="cpu-async-progress"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-sidebar">
+                <div class="info-card">
+                    <h4>How it works</h4>
+
+                    <p class="section-label">THE SCENARIO</p>
+                    <p>Calculating millions of securely hashed passwords using SHA-256 operations.</p>
+
+                    <p class="section-label text-red">SINGLE CORE (BLOCKING)</p>
+                    <p>Uses a generic loop, maxing out only 1 CPU core.</p>
+
+                    <p class="section-label text-green">PARALLEL PROCESSING</p>
+                    <p>Uses <code>parallelStream()</code> to divide work across absolutely every CPU core.</p>
+
+                    <p class="section-label text-blue">UNDER THE HOOD (JAVA)</p>
+                    <p>Java's <code>.parallelStream()</code> automatically divides the incoming list of passwords into
+                        chunks, calculates how many hardware CPU Cores your server has, and drops the chunks into the
+                        powerful <code>ForkJoinPool.commonPool()</code> to process them synchronously at blinding
+                        speeds.</p>
+
+                    <div class="divider"></div>
+
+                    <p class="section-label">PRODUCTION EXAMPLE</p>
+                    <p class="real-world">An HR system running End-of-Month Payroll. You must calculate complex tax
+                        deductions for 100,000 employees. A blocking loop takes 4 hours because it isolates the workload
+                        to just 1 processor core. Parallel streams finish the entire batch in 30 minutes by recruiting
+                        all 8 cores of the server!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Load Test Tab -->
+        <section id="load-test" class="tab-content">
+            <div class="panel">
+                <div class="header-split">
+                    <h2>Thread Starvation Simulator</h2>
+                    <div class="btn-group">
+                        <button id="startLoadBlockingBtn" class="primary-btn bg-red">Test Blocking 🚧</button>
+                        <button id="startLoadAsyncBtn" class="primary-btn bg-green">Test Async ⚡</button>
+                    </div>
+                </div>
+                <p class="subtitle">Bombarding the Tomcat server with 200 simultaneous requests. Green = Success, Red =
+                    Core Thread Exhausted (Server Crash).</p>
+
+                <div class="grid-container" id="execution-grid">
+                    <!-- Dots injected by JS -->
+                </div>
+            </div>
+
+            <div class="info-sidebar">
+                <div class="info-card">
+                    <h4>How it works</h4>
+
+                    <p class="section-label">THE SCENARIO</p>
+                    <p>200 users hit Tomcat (which has 200 total HTTP threads) at the exact same millisecond.</p>
+
+                    <p class="section-label text-red">SERVER CRASH (BLOCKING)</p>
+                    <p>All 200 Tomcat threads get stuck waiting. New traffic is dropped, resulting in mass timeouts.</p>
+
+                    <p class="section-label text-green">RESILIENT SERVER (ASYNC)</p>
+                    <p>Tomcat threads delegate to a background pool instantly, remaining free to serve 100% of the
+                        traffic without failing.</p>
+
+                    <p class="section-label text-blue">UNDER THE HOOD (JAVA)</p>
+                    <p>By returning a <code>CompletableFuture</code> from the Controller, the main Tomcat HTTP thread
+                        INSTANTLY hands the task to a lightweight backend thread. The Tomcat thread goes back to the
+                        listener pool, preventing the server from freezing and allowing it to serve tens of thousands of
+                        net-new users without crashing.</p>
+
+                    <div class="divider"></div>
+
+                    <p class="section-label">PRODUCTION EXAMPLE</p>
+                    <p class="real-world">Black Friday on an E-Commerce site. A third-party Payment Gateway lags, taking
+                        4 seconds to process credit cards. Suddenly, 500 customers click 'Buy'. A Blocking backend
+                        instantly runs out of threads, freezing the entire website and dropping shoppers. The Async
+                        server safely queues the checkouts into background workers, keeping the main website perfectly
+                        smooth for browsing!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

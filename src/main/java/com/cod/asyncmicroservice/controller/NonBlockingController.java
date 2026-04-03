@@ -5,7 +5,9 @@ import com.cod.asyncmicroservice.business.CustomerService;
 import com.cod.asyncmicroservice.business.FileService;
 import com.cod.asyncmicroservice.domain.Customer;
 import com.cod.asyncmicroservice.domain.FileData;
-import lombok.extern.slf4j.Slf4j;
+import com.cod.asyncmicroservice.domain.DashboardResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +16,10 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@Slf4j
 
 @RequestMapping("/nonblocking")
 public class NonBlockingController {
+    private static final Logger log = LoggerFactory.getLogger(NonBlockingController.class);
 
     @Autowired
     AsyncService asyncService;
@@ -50,5 +52,37 @@ public class NonBlockingController {
         return asyncService.writeFile(fileData);
     }
 
+    @GetMapping("/dashboard")
+    public CompletableFuture<DashboardResponse> getDashboard() {
+        log.info("Non-Blocking request to fetch dashboard started");
+        
+        CompletableFuture<String> creditScoreFuture = asyncService.getCreditScoreAsync();
+        CompletableFuture<String> orderHistoryFuture = asyncService.getOrderHistoryAsync();
+        CompletableFuture<String> recommendationsFuture = asyncService.getRecommendationsAsync();
 
+        return CompletableFuture.allOf(creditScoreFuture, orderHistoryFuture, recommendationsFuture)
+                .thenApply(ignoredVoid -> {
+                    try {
+                        return new DashboardResponse(
+                                creditScoreFuture.get(),
+                                orderHistoryFuture.get(),
+                                recommendationsFuture.get()
+                        );
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error fetching dashboard data", e);
+                    }
+                });
+    }
+
+    @GetMapping("/slow-task")
+    public CompletableFuture<String> processSlowTask() {
+        log.info("Non-Blocking request for slow task started");
+        return asyncService.processSlowTaskAsync();
+    }
+
+    @GetMapping("/cpu-heavy")
+    public CompletableFuture<List<String>> processCpuHeavy(@RequestParam(defaultValue = "50") int count) {
+        log.info("Non-Blocking request for CPU heavy task started");
+        return asyncService.processCpuHeavyAsync(count);
+    }
 }

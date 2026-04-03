@@ -1,0 +1,306 @@
+:root {
+    --bg-color: #f8fafc;
+    --text-color: #0f172a;
+    --text-muted: #64748b;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --border-color: #cbd5e1;
+    --blocking-color: #ef4444;
+    --async-color: #10b981;
+    --card-bg: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    line-height: 1.6;
+    font-size: 1.05rem;
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    padding: 3rem 2.5rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    margin-top: 0.5rem;
+    margin-bottom: 2.5rem;
+}
+
+/* Widescreen Tabs */
+.tabs {
+    display: inline-flex;
+    background: #e2e8f0;
+    border-radius: 8px;
+    padding: 6px;
+    gap: 4px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px 24px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    color: var(--text-color);
+}
+
+.tab-btn.active {
+    background: var(--card-bg);
+    color: var(--primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Grid Layout for Panels */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@media (max-width: 900px) {
+    .tab-content.active {
+        grid-template-columns: 1fr; /* Stack vertically on small screens */
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* The actual Dashboard Panel */
+.panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.header-split {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.25rem;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.primary-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.primary-btn:active { transform: translateY(0); }
+.primary-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.primary-btn.bg-red { background: var(--blocking-color); }
+.primary-btn.bg-red:hover { background: #dc2626; }
+.primary-btn.bg-green { background: var(--async-color); }
+.primary-btn.bg-green:hover { background: #059669; }
+
+
+/* Races */
+.competitor {
+    margin-bottom: 2.5rem;
+}
+
+.racer-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 0.75rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.timer {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.track {
+    height: 16px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border-color);
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 8px;
+    transition: width 0.1s linear;
+}
+
+.blocking-color { background: var(--blocking-color); }
+.async-color { background: var(--async-color); }
+
+/* Starvation Grid */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18px, 1fr));
+    gap: 6px;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.dot {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: #e2e8f0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.dot.processing { background: #fcd34d; }
+.dot.success { background: var(--async-color); }
+.dot.fail { background: var(--blocking-color); }
+
+
+/* Educational Info Sidebar */
+.info-sidebar {
+    height: 100%;
+}
+
+.info-card {
+    background: var(--card-bg);
+    border: 1px solid #bfdbfe;
+    border-top: 4px solid var(--primary);
+    border-radius: 10px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.05);
+    height: 100%;
+}
+
+.info-card h4 {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.info-card p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    margin-bottom: 0;
+    line-height: 1.7;
+}
+
+.section-label {
+    font-size: 0.8rem !important;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem !important;
+    margin-top: 1.5rem !important;
+}
+
+.section-label:first-of-type {
+    margin-top: 0 !important;
+}
+
+.section-label.text-red { color: var(--blocking-color); }
+.section-label.text-green { color: var(--async-color); }
+.section-label.text-blue { color: var(--primary); }
+
+.info-card strong {
+    color: var(--text-color);
+}
+
+.info-card code {
+    background: #f1f5f9;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 2rem 0;
+}
+
+.highlight-title {
+    color: var(--primary) !important;
+}
+
+.real-world {
+    font-style: italic;
+    color: #475569 !important;
+}
